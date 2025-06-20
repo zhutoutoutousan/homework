@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const content = {
   hero: {
@@ -191,17 +191,19 @@ const content = {
   }
 };
 
-export default function BetterCallDominik() {
-  const [language, setLanguage] = useState<'de' | 'en'>('de');
-  const [showTranslation, setShowTranslation] = useState(false);
+function InteractiveCTA({ 
+  type, 
+  content, 
+  language 
+}: { 
+  type: 'kpis' | 'valueProps' | 'results',
+  content: any,
+  language: 'de' | 'en'
+}) {
   const [diceRoll, setDiceRoll] = useState(0);
   const [diceRolling, setDiceRolling] = useState(false);
   const [readyClicks, setReadyClicks] = useState(0);
   const [crystalBallActive, setCrystalBallActive] = useState(false);
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'de' ? 'en' : 'de');
-  };
 
   const handleDiceRoll = () => {
     setDiceRolling(true);
@@ -219,6 +221,70 @@ export default function BetterCallDominik() {
   const activateCrystalBall = () => {
     setCrystalBallActive(true);
     setTimeout(() => setCrystalBallActive(false), 2000);
+  };
+
+  const getHandler = () => {
+    switch(type) {
+      case 'kpis':
+        return handleReadyClick;
+      case 'valueProps':
+        return activateCrystalBall;
+      case 'results':
+        return handleDiceRoll;
+      default:
+        return () => {};
+    }
+  };
+
+  const getButtonContent = () => {
+    switch(type) {
+      case 'kpis':
+        return `${content.ctas[language].kpis.action} ${readyClicks > 0 ? `(${readyClicks})` : ''}`;
+      case 'valueProps':
+        return content.ctas[language].valueProps.action;
+      case 'results':
+        return diceRolling ? '🎲' : diceRoll === 6 ? '🎯 Access Granted!' : diceRoll > 0 ? `Try again (${diceRoll})` : content.ctas[language].results.action;
+      default:
+        return '';
+    }
+  };
+
+  return (
+    <motion.div
+      className="mt-16 text-center"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+    >
+      <motion.button
+        onClick={getHandler()}
+        disabled={type === 'results' && diceRolling}
+        className="group relative px-8 py-4 bg-transparent border-2 border-purple-500 rounded-full overflow-hidden"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div className={`absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 transform transition-all duration-500 ${type === 'valueProps' && crystalBallActive ? 'scale-150 opacity-50' : 'scale-100 opacity-20'}`} />
+        <div className="relative">
+          <h3 className="text-2xl font-bold text-white mb-2">
+            {content.ctas[language][type].text}
+          </h3>
+          <p className="text-sm text-gray-400">
+            {content.ctas[language][type].subtext}
+          </p>
+          <span className={`block mt-4 text-xl font-bold ${type === 'valueProps' && crystalBallActive ? 'text-white scale-110' : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500'}`}>
+            {getButtonContent()}
+          </span>
+        </div>
+      </motion.button>
+    </motion.div>
+  );
+}
+
+export default function BetterCallDominik() {
+  const [language, setLanguage] = useState<'de' | 'en'>('de');
+  const [showTranslation, setShowTranslation] = useState(false);
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'de' ? 'en' : 'de');
   };
 
   return (
@@ -342,28 +408,7 @@ export default function BetterCallDominik() {
             ))}
           </div>
           
-          {/* Unconventional CTA */}
-          <motion.div
-            className="mt-16 text-center"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-          >
-            <motion.button
-              onClick={handleReadyClick}
-              className="group relative px-8 py-4 bg-transparent border-2 border-purple-500 rounded-full overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 transform transition-transform duration-300 group-hover:scale-x-110" />
-              <div className="relative">
-                <h3 className="text-2xl font-bold text-white mb-2">{content.ctas[language].kpis.text}</h3>
-                <p className="text-sm text-gray-400">{content.ctas[language].kpis.subtext}</p>
-                <span className="block mt-4 text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                  {content.ctas[language].kpis.action} {readyClicks > 0 ? `(${readyClicks})` : ''}
-                </span>
-              </div>
-            </motion.button>
-          </motion.div>
+          <InteractiveCTA type="kpis" content={content} language={language} />
         </motion.div>
 
         {/* Value Propositions */}
@@ -398,28 +443,7 @@ export default function BetterCallDominik() {
             ))}
           </div>
 
-          {/* Crystal Ball CTA */}
-          <motion.div
-            className="mt-16 text-center"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-          >
-            <motion.button
-              onClick={activateCrystalBall}
-              className="group relative px-8 py-4 bg-transparent border-2 border-purple-500 rounded-full overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className={`absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 transform transition-all duration-500 ${crystalBallActive ? 'scale-150 opacity-50' : 'scale-100 opacity-20'}`} />
-              <div className="relative">
-                <h3 className="text-2xl font-bold text-white mb-2">{content.ctas[language].valueProps.text}</h3>
-                <p className="text-sm text-gray-400">{content.ctas[language].valueProps.subtext}</p>
-                <span className={`block mt-4 text-xl font-bold transition-all duration-500 ${crystalBallActive ? 'text-white scale-110' : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500'}`}>
-                  {content.ctas[language].valueProps.action}
-                </span>
-              </div>
-            </motion.button>
-          </motion.div>
+          <InteractiveCTA type="valueProps" content={content} language={language} />
         </motion.div>
 
         {/* Results Section */}
@@ -456,29 +480,7 @@ export default function BetterCallDominik() {
             ))}
           </div>
 
-          {/* Dice Roll CTA */}
-          <motion.div
-            className="mt-16 text-center"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-          >
-            <motion.button
-              onClick={handleDiceRoll}
-              disabled={diceRolling}
-              className="group relative px-8 py-4 bg-transparent border-2 border-purple-500 rounded-full overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 transform transition-transform duration-300 group-hover:scale-x-110" />
-              <div className="relative">
-                <h3 className="text-2xl font-bold text-white mb-2">{content.ctas[language].results.text}</h3>
-                <p className="text-sm text-gray-400">{content.ctas[language].results.subtext}</p>
-                <span className="block mt-4 text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                  {diceRolling ? '🎲' : diceRoll === 6 ? '🎯 Access Granted!' : diceRoll > 0 ? `Try again (${diceRoll})` : content.ctas[language].results.action}
-                </span>
-              </div>
-            </motion.button>
-          </motion.div>
+          <InteractiveCTA type="results" content={content} language={language} />
         </motion.div>
 
         {/* Topics Grid */}
