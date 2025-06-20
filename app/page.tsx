@@ -1079,7 +1079,7 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       <style>{shimmerAnimation}</style>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-purple-500/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-purple-500/20 px-[5rem]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <div className="text-2xl font-black tracking-tighter">BCD</div>
@@ -1093,6 +1093,8 @@ export default function Home() {
               <Button className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-none border-2 border-purple-500/30">
                 Join Now
               </Button>
+              {/* Navigate to /bettercalldominik */}
+              <a href="/bettercalldominik" className="text-purple-300 hover:text-white transition-colors">Better Call Dominik</a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -1121,11 +1123,9 @@ export default function Home() {
         )}
       </nav>
 
-      <main className="pt-20">
+      <main>
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-32 relative min-h-[90vh] flex items-center">
-          <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-black/50 backdrop-blur-3xl -z-10" />
-          <div className="absolute inset-0 hero-gradient -z-5" />
+        <section className="container mx-auto px-[1rem] py-2 relative min-h-[100vh] flex items-center">
           
           <div className="grid md:grid-cols-2 gap-16 items-center w-full">
             <div className="space-y-12 text-center md:text-left">
@@ -1410,7 +1410,7 @@ export default function Home() {
         )}
 
         {/* Testimonials Section */}
-        <section className="container mx-auto px-4 py-24">
+        <section className="container mx-auto px-[14rem] py-24">
           <div className="space-y-8">
             <div className="flex items-center space-x-6 bg-black/40 p-8 rounded-lg border border-purple-500/20 backdrop-blur-sm">
               <Avatar className="h-16 w-16 border-2 border-purple-500/30 image-container">
@@ -1459,7 +1459,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-        <section className="container mx-auto px-4 py-24">
+        <section className="container mx-auto px-[6rem] py-24">
           <div className="text-center space-y-6 bg-black/40 p-12 rounded-lg border border-purple-500/20 backdrop-blur-sm">
             <h2 className="text-5xl font-black tracking-tighter">Join the Elite Circle</h2>
             <p className="text-2xl text-purple-300">Access exclusive opportunities and connect with industry leaders</p>
@@ -1470,7 +1470,7 @@ export default function Home() {
       </section>
 
         {/* Benefits Section */}
-        <section id="benefits" className="container mx-auto px-4 py-24">
+        <section id="benefits" className="container mx-auto px-[6rem] py-24">
           <h2 className="text-5xl font-black tracking-tighter mb-4">Elite Benefits</h2>
           <p className="text-2xl text-purple-300 mb-12">Unlock your potential with our exclusive network</p>
 
@@ -1507,7 +1507,7 @@ export default function Home() {
       </section>
 
       {/* Upcoming Event Section */}
-        <section id="events" className="container mx-auto px-4 py-24">
+        <section id="events" className="container mx-auto px-[6rem] py-24">
           <h2 className="text-5xl font-black tracking-tighter mb-12">Elite Summit 2024</h2>
 
           <div className="grid md:grid-cols-2 gap-12">
@@ -1537,7 +1537,7 @@ export default function Home() {
       </section>
 
       {/* News Section */}
-        <section id="insights" className="container mx-auto px-4 py-24">
+        <section id="insights" className="container mx-auto px-[6rem] py-24">
           <h2 className="text-5xl font-black tracking-tighter mb-4">Elite Insights</h2>
           <p className="text-2xl text-purple-300 mb-12">Stay ahead with exclusive industry insights</p>
 
@@ -1605,7 +1605,7 @@ export default function Home() {
       </section>
 
       {/* KPIs/Facts Section */}
-        <section className="container mx-auto px-4 py-24 mb-12">
+        <section className="container mx-auto px-[6rem] py-24 mb-12">
           <h2 className="text-5xl font-black tracking-tighter mb-12 text-center">Elite Metrics</h2>
 
           <ul className="space-y-6 max-w-3xl mx-auto text-lg">
@@ -1691,7 +1691,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-black/90 backdrop-blur-xl border-t border-purple-500/20">
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-[6rem] py-16">
           <div className="grid md:grid-cols-4 gap-12">
             <div className="space-y-6">
               <h3 className="text-3xl font-black tracking-tighter">BCD</h3>
