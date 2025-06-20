@@ -6,6 +6,21 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
+
+// Dynamically import motion components with ssr disabled
+const MotionDiv = dynamic(() => import('framer-motion').then((mod) => mod.motion.div), {
+  ssr: false
+});
+
+const MotionButton = dynamic(() => import('framer-motion').then((mod) => mod.motion.button), {
+  ssr: false
+});
+
+// Import the InteractiveCTA component
+const InteractiveCTA = dynamic(() => import('./InteractiveCTA').then(mod => mod.InteractiveCTA), {
+  ssr: false
+});
 
 const content = {
   hero: {
@@ -191,94 +206,6 @@ const content = {
   }
 };
 
-function InteractiveCTA({ 
-  type, 
-  content, 
-  language 
-}: { 
-  type: 'kpis' | 'valueProps' | 'results',
-  content: any,
-  language: 'de' | 'en'
-}) {
-  const [diceRoll, setDiceRoll] = useState(0);
-  const [diceRolling, setDiceRolling] = useState(false);
-  const [readyClicks, setReadyClicks] = useState(0);
-  const [crystalBallActive, setCrystalBallActive] = useState(false);
-
-  const handleDiceRoll = () => {
-    setDiceRolling(true);
-    const roll = Math.floor(Math.random() * 6) + 1;
-    setTimeout(() => {
-      setDiceRoll(roll);
-      setDiceRolling(false);
-    }, 1000);
-  };
-
-  const handleReadyClick = () => {
-    setReadyClicks(prev => prev + 1);
-  };
-
-  const activateCrystalBall = () => {
-    setCrystalBallActive(true);
-    setTimeout(() => setCrystalBallActive(false), 2000);
-  };
-
-  const getHandler = () => {
-    switch(type) {
-      case 'kpis':
-        return handleReadyClick;
-      case 'valueProps':
-        return activateCrystalBall;
-      case 'results':
-        return handleDiceRoll;
-      default:
-        return () => {};
-    }
-  };
-
-  const getButtonContent = () => {
-    switch(type) {
-      case 'kpis':
-        return `${content.ctas[language].kpis.action} ${readyClicks > 0 ? `(${readyClicks})` : ''}`;
-      case 'valueProps':
-        return content.ctas[language].valueProps.action;
-      case 'results':
-        return diceRolling ? '🎲' : diceRoll === 6 ? '🎯 Access Granted!' : diceRoll > 0 ? `Try again (${diceRoll})` : content.ctas[language].results.action;
-      default:
-        return '';
-    }
-  };
-
-  return (
-    <motion.div
-      className="mt-16 text-center"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-    >
-      <motion.button
-        onClick={getHandler()}
-        disabled={type === 'results' && diceRolling}
-        className="group relative px-8 py-4 bg-transparent border-2 border-purple-500 rounded-full overflow-hidden"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <div className={`absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 transform transition-all duration-500 ${type === 'valueProps' && crystalBallActive ? 'scale-150 opacity-50' : 'scale-100 opacity-20'}`} />
-        <div className="relative">
-          <h3 className="text-2xl font-bold text-white mb-2">
-            {content.ctas[language][type].text}
-          </h3>
-          <p className="text-sm text-gray-400">
-            {content.ctas[language][type].subtext}
-          </p>
-          <span className={`block mt-4 text-xl font-bold ${type === 'valueProps' && crystalBallActive ? 'text-white scale-110' : 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500'}`}>
-            {getButtonContent()}
-          </span>
-        </div>
-      </motion.button>
-    </motion.div>
-  );
-}
-
 export default function BetterCallDominik() {
   const [language, setLanguage] = useState<'de' | 'en'>('de');
   const [showTranslation, setShowTranslation] = useState(false);
@@ -290,6 +217,7 @@ export default function BetterCallDominik() {
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900 via-black to-black overflow-hidden">
       {/* Floating Elements */}
+      { typeof window !== "undefined" &&
       <div className="fixed inset-0 pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <motion.div
@@ -314,6 +242,7 @@ export default function BetterCallDominik() {
           />
         ))}
       </div>
+      }
 
       {/* Language Toggle */}
       <div className="fixed top-4 right-4 z-50">
@@ -378,18 +307,10 @@ export default function BetterCallDominik() {
         </motion.div>
 
         {/* KPIs Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mb-32"
-        >
+        <div className="mb-32">
           <div className="grid md:grid-cols-4 gap-8">
             {content.kpis[language].map((kpi, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.05 }}
-                className="relative group"
-              >
+              <div key={index} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
                 <Card className="backdrop-blur-xl bg-black/30 border border-purple-500/30 p-8 rounded-3xl relative text-center">
                   <h3 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-4">
@@ -404,29 +325,20 @@ export default function BetterCallDominik() {
                     </div>
                   )}
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
-          
           <InteractiveCTA type="kpis" content={content} language={language} />
-        </motion.div>
+        </div>
 
         {/* Value Propositions */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mb-32"
-        >
+        <div className="mb-32">
           <h2 className="text-5xl font-bold text-white mb-16 text-center">
             {language === 'de' ? 'Dein Unfairer Vorteil' : 'Your Unfair Advantage'}
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             {content.valueProps[language].map((prop, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.02 }}
-                className="relative group"
-              >
+              <div key={index} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
                 <Card className="backdrop-blur-xl bg-black/30 border border-purple-500/30 p-8 rounded-3xl relative">
                   <span className="text-4xl mb-6 block">{prop.icon}</span>
@@ -439,29 +351,20 @@ export default function BetterCallDominik() {
                     </div>
                   )}
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
-
           <InteractiveCTA type="valueProps" content={content} language={language} />
-        </motion.div>
+        </div>
 
         {/* Results Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="mb-32"
-        >
+        <div className="mb-32">
           <h2 className="text-5xl font-bold text-white mb-16 text-center">
             {language === 'de' ? 'Unsere Erfolge' : 'Our Results'}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {content.results[language].map((result, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.05 }}
-                className="relative group"
-              >
+              <div key={index} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
                 <Card className="backdrop-blur-xl bg-black/30 border border-purple-500/30 p-8 rounded-3xl relative text-center">
                   <h3 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-4">
@@ -476,12 +379,11 @@ export default function BetterCallDominik() {
                     </div>
                   )}
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
-
           <InteractiveCTA type="results" content={content} language={language} />
-        </motion.div>
+        </div>
 
         {/* Topics Grid */}
         <motion.div
